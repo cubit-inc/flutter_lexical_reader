@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_lexical_reader/src/model/math_equation_options.dart';
+import 'package:flutter_lexical_reader/src/widget/parse_video.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'model/image_options.dart';
-
 part 'card.dart';
 part 'props.dart';
 part 'widget/parse_children.dart';
 part 'widget/parse_equation.dart';
 part 'widget/parse_image.dart';
+part 'widget/parse_horizontal_line.dart';
 part 'widget/parse_numbered_list.dart';
 part 'widget/parse_numbered_list_item.dart';
 part 'widget/parse_paragraph.dart';
 part 'widget/parse_table.dart';
+part 'widget/parse_link.dart';
 part 'widget/parse_text.dart';
 
 /// The primary widget for parsing and rendering complex JSON structures.
@@ -81,6 +82,8 @@ class LexicalParser extends StatefulWidget {
   final bool useColumn;
   final bool useMyTextStyle;
 
+  // this is for custom renderer
+
   @override
   State<LexicalParser> createState() => _LexicalParserState();
 }
@@ -106,7 +109,6 @@ class _LexicalParserState extends State<LexicalParser> {
 
   @override
   Widget build(BuildContext context) {
-    log('Lexical: ${jsonEncode(_data)}');
     return _PropsInheritedWidget(
       paragraphStyle: widget.paragraphStyle,
       h1Style: widget.h1Style,
@@ -147,7 +149,7 @@ class _LexicalParserState extends State<LexicalParser> {
 
     if (widget.useColumn) {
       return Column(
-        children: parseJsonChildrenWidget(parsedChildren),
+        children: parseJsonChildrenWidget(parsedChildren, context),
       );
     }
 
@@ -158,7 +160,8 @@ class _LexicalParserState extends State<LexicalParser> {
             shrinkWrap: widget.shrinkWrap,
             itemCount: parsedChildren.length,
             itemBuilder: (context, index) {
-              return parseJsonChildrenWidget([parsedChildren[index]])[0];
+              return parseJsonChildrenWidget(
+                  [parsedChildren[index]], context)[0];
             },
           )
         : ListView(
@@ -166,7 +169,7 @@ class _LexicalParserState extends State<LexicalParser> {
             physics: widget.scrollPhysics,
             controller: widget.scrollController,
             shrinkWrap: widget.shrinkWrap,
-            children: parseJsonChildrenWidget(parsedChildren),
+            children: parseJsonChildrenWidget(parsedChildren, context),
           );
   }
 }

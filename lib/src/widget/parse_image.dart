@@ -77,8 +77,39 @@ void _fullScreenImage(BuildContext context, Widget child) {
 Row _imageErrorBuilder(Object error) {
   return Row(
     children: [
-      Text('Failed to load $error'),
+      Flexible(child: Text('Failed to load $error')),
       const Icon(Icons.error),
     ],
+  );
+}
+
+Widget _ParseImage(Map<String, dynamic> child, BuildContext context) {
+  // final double width = double.parse(child['maxWidth'].toString());
+  final imageSource = child['value']?["url"];
+  final Widget image;
+
+  if (imageSource is String && imageSource.startsWith('data:image')) {
+    final String base64String = imageSource.split(',')[1];
+    Uint8List bytes = base64Decode(base64String);
+    image = Image.memory(
+      bytes,
+      fit: BoxFit.fitWidth,
+      errorBuilder: (context, error, stackTrace) => _imageErrorBuilder(error),
+    );
+  } else {
+    image = CachedNetworkImage(
+      imageUrl: imageSource,
+      errorWidget: (context, error, stackTrace) => _imageErrorBuilder(error),
+      fit: BoxFit.fitWidth,
+      placeholder: (context, url) =>
+          const Center(child: CupertinoActivityIndicator()),
+    );
+  }
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: GestureDetector(
+      onTap: () => _fullScreenImage(context, image),
+      child: image,
+    ),
   );
 }

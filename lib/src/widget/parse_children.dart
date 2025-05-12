@@ -1,6 +1,7 @@
 part of '../parser.dart';
 
-List<Widget> parseJsonChildrenWidget(List<dynamic> children) {
+List<Widget> parseJsonChildrenWidget(
+    List<dynamic> children, BuildContext context) {
   return children.map<Widget>(
     (child) {
       switch (child['type']) {
@@ -11,8 +12,19 @@ List<Widget> parseJsonChildrenWidget(List<dynamic> children) {
           );
         case 'paragraph':
           return _ParseParagraph(child: child);
+        case 'upload':
+          String? type = child?["value"]?["mimeType"];
+
+          if (type?.startsWith("video") == true) {
+            debugPrint("this is the test for video :::: ");
+            return ParseVideo(child: child);
+          } else {
+            return _ParseImage(child, context);
+          }
         case 'quote':
           return _ParseParagraph(child: child);
+        case 'horizontalrule':
+          return const _ParseHorizontalLine();
         case 'table':
           return ParseTable(child: child);
         case 'list':
@@ -39,7 +51,12 @@ List<InlineSpan> parseJsonChild(List<dynamic> children, BuildContext context) {
           props.useMyTextStyle,
         ));
         break;
+      case 'link':
+        widgets.add(_parseLink(child, props.paragraphStyle ?? const TextStyle(),
+            props.useMyTextStyle, context));
+        break;
       case 'image':
+      case 'upload':
         widgets.add(_parseImage(child, context));
         break;
       case 'equation':

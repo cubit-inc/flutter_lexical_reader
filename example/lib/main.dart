@@ -12,6 +12,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        scrollbarTheme: const ScrollbarThemeData(
+          thumbColor: WidgetStatePropertyAll(Color(0xFF320E01)),
+          trackColor: WidgetStatePropertyAll(Color(0xFFDBD4D1)),
+          trackBorderColor: WidgetStatePropertyAll(Color(0x00000000)),
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

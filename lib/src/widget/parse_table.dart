@@ -1,12 +1,19 @@
 part of '../parser.dart';
 
-class ParseTable extends StatelessWidget {
+class ParseTable extends StatefulWidget {
   const ParseTable({
     super.key,
     required this.child,
   });
 
   final Map<String, dynamic> child;
+
+  @override
+  State<ParseTable> createState() => _ParseTableState();
+}
+
+class _ParseTableState extends State<ParseTable> {
+  late ScrollController _scrollController;
 
   List<TableRow> _buildTableRows(List<dynamic> childrenData) {
     final temp = childrenData
@@ -29,10 +36,22 @@ class ParseTable extends StatelessWidget {
   }
 
   @override
+  initState() {
+    _scrollController = ScrollController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tablePadding = _PropsInheritedWidget.of(context)?.tablePadding ??
         const EdgeInsets.all(2.0);
-    final rows = _buildTableRows(child['children']);
+    final rows = _buildTableRows(widget.child['children']);
     final maxCells =
         rows.map((row) => row.children.length).reduce((a, b) => a > b ? a : b);
 
@@ -46,11 +65,30 @@ class ParseTable extends StatelessWidget {
       return TableRow(children: cells);
     }).toList();
 
-    return Padding(
-      padding: tablePadding,
-      child: Table(
-        children: normalizedRows,
-        border: TableBorder.all(color: Colors.black54),
+    return Scrollbar(
+      trackVisibility: true,
+      thumbVisibility: true,
+      thickness: 6,
+      controller: _scrollController,
+      interactive: false,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Padding(
+          padding: tablePadding,
+          child: SingleChildScrollView(
+            controller: _scrollController,
+            scrollDirection: Axis.horizontal,
+            child: Table(
+              defaultColumnWidth: const FlexColumnWidth(),
+              columnWidths: {
+                for (var index in List.generate(maxCells, (index) => index))
+                  index: const IntrinsicColumnWidth()
+              },
+              children: normalizedRows,
+              border: TableBorder.all(color: Colors.black54),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -69,7 +107,7 @@ class _BuildTableCell extends StatelessWidget {
     return Padding(
       padding: tableCellPadding,
       child: Column(
-        children: parseJsonChildrenWidget(cell['children'] ?? []),
+        children: parseJsonChildrenWidget(cell['children'] ?? [], context),
       ),
     );
   }
