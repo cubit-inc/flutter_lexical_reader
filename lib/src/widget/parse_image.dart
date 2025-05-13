@@ -5,6 +5,7 @@ WidgetSpan _parseImage(Map<String, dynamic> child, BuildContext context) {
   final imageSource = child['src'];
   final Widget image;
   final imageOptions = _PropsInheritedWidget.of(context)?.imageOptions;
+  final globalContext = _PropsInheritedWidget.of(context)?.globalContext;
 
   if (imageSource is String && imageSource.startsWith('data:image')) {
     final String base64String = imageSource.split(',')[1];
@@ -30,7 +31,7 @@ WidgetSpan _parseImage(Map<String, dynamic> child, BuildContext context) {
     child: Padding(
       padding: imageOptions?.padding ?? const EdgeInsets.all(8.0),
       child: GestureDetector(
-        onTap: () => _fullScreenImage(context, image),
+        onTap: () => _fullScreenImage(globalContext ?? context, image),
         child: image,
       ),
     ),
@@ -83,9 +84,10 @@ Row _imageErrorBuilder(Object error) {
   );
 }
 
-Widget _ParseImage(Map<String, dynamic> child, BuildContext context) {
+Widget _ParseImage(Map<String, dynamic> child, BuildContext context,BuildContext? globalContext) {
   // final double width = double.parse(child['maxWidth'].toString());
   final imageSource = child['value']?["url"];
+
   final Widget image;
 
   if (imageSource is String && imageSource.startsWith('data:image')) {
@@ -108,7 +110,7 @@ Widget _ParseImage(Map<String, dynamic> child, BuildContext context) {
   return Padding(
     padding: const EdgeInsets.all(8.0),
     child: GestureDetector(
-      onTap: () => _fullScreenImage(context, image),
+      onTap: () => _fullScreenImage(globalContext ?? context, image),
       child: image,
     ),
   );

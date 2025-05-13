@@ -18,6 +18,7 @@ part 'widget/parse_horizontal_line.dart';
 part 'widget/parse_numbered_list.dart';
 part 'widget/parse_numbered_list_item.dart';
 part 'widget/parse_paragraph.dart';
+part 'widget/parse_nestedlist.dart';
 part 'widget/parse_table.dart';
 part 'widget/parse_link.dart';
 part 'widget/parse_text.dart';
@@ -29,33 +30,34 @@ part 'widget/parse_text.dart';
 ///
 /// Other stylistic and structural properties can also be customized.
 class LexicalParser extends StatefulWidget {
-  const LexicalParser({
-    super.key,
-    this.sourceMap,
-    this.sourceString,
-    this.paragraphStyle,
-    this.lazyLoad,
-    this.tablePadding,
-    this.paragraphPadding,
-    this.numberedPadding,
-    this.tableCellPadding,
-    this.mathEquationOptions = const MathEquationOptions(),
-    this.h1Style,
-    this.h2Style,
-    this.shrinkWrap = false,
-    this.scrollController,
-    this.scrollPhysics,
-    this.imageOptions = const ImageOptions(),
-    this.mathEquationPadding,
-    this.expanded,
-    this.listPadding,
-    this.paragraphDataStyle,
-    this.useColumn = false,
-    this.useMyTextStyle = false,
-  });
+  const LexicalParser(
+      {super.key,
+      this.sourceMap,
+      this.sourceString,
+      this.paragraphStyle,
+      this.lazyLoad,
+      this.tablePadding,
+      this.paragraphPadding,
+      this.numberedPadding,
+      this.tableCellPadding,
+      this.mathEquationOptions = const MathEquationOptions(),
+      this.h1Style,
+      this.h2Style,
+      this.shrinkWrap = false,
+      this.scrollController,
+      this.scrollPhysics,
+      this.imageOptions = const ImageOptions(),
+      this.mathEquationPadding,
+      this.expanded,
+      this.listPadding,
+      this.paragraphDataStyle,
+      this.useColumn = false,
+      this.useMyTextStyle = false,
+      this.globalContext});
 
   /// Direct input of the JSON structure.
   final Map<String, dynamic>? sourceMap;
+  final BuildContext? globalContext;
 
   /// Raw JSON string, which will be parsed internally.
   final String? sourceString;
@@ -121,6 +123,7 @@ class _LexicalParserState extends State<LexicalParser> {
       imageOptions: widget.imageOptions,
       paragraphDataStyle: widget.paragraphDataStyle,
       useMyTextStyle: widget.useMyTextStyle,
+      globalContext: widget.globalContext,
       child: _buildList(),
     );
   }
@@ -149,7 +152,8 @@ class _LexicalParserState extends State<LexicalParser> {
 
     if (widget.useColumn) {
       return Column(
-        children: parseJsonChildrenWidget(parsedChildren, context),
+        children: parseJsonChildrenWidget(parsedChildren, context,
+            globalContext: widget.globalContext),
       );
     }
 
@@ -160,8 +164,8 @@ class _LexicalParserState extends State<LexicalParser> {
             shrinkWrap: widget.shrinkWrap,
             itemCount: parsedChildren.length,
             itemBuilder: (context, index) {
-              return parseJsonChildrenWidget(
-                  [parsedChildren[index]], context)[0];
+              return parseJsonChildrenWidget([parsedChildren[index]], context,
+                  globalContext: widget.globalContext)[0];
             },
           )
         : ListView(
@@ -169,7 +173,8 @@ class _LexicalParserState extends State<LexicalParser> {
             physics: widget.scrollPhysics,
             controller: widget.scrollController,
             shrinkWrap: widget.shrinkWrap,
-            children: parseJsonChildrenWidget(parsedChildren, context),
+            children: parseJsonChildrenWidget(parsedChildren, context,
+                globalContext: widget.globalContext),
           );
   }
 }

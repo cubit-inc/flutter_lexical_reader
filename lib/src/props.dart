@@ -16,6 +16,8 @@ class _PropsInheritedWidget extends InheritedWidget {
 
   final bool useMyTextStyle;
 
+  final BuildContext? globalContext;
+
   const _PropsInheritedWidget({
     Key? key,
     this.paragraphStyle,
@@ -29,6 +31,7 @@ class _PropsInheritedWidget extends InheritedWidget {
     this.h2Style,
     required this.imageOptions,
     this.paragraphDataStyle,
+    this.globalContext,
     required this.useMyTextStyle,
   }) : super(key: key, child: child);
 
