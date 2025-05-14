@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -43,12 +42,11 @@ class _ParseVideoState extends State<ParseVideo> {
 
       // Create chewie controller after video is initialized
       chewieController = ChewieController(
-        videoPlayerController: _controller,
-        autoPlay: false,
-        looping: false,
-        aspectRatio: _controller.value.aspectRatio,
-        placeholder:null
-      );
+          videoPlayerController: _controller,
+          autoPlay: false,
+          looping: false,
+          aspectRatio: _controller.value.aspectRatio,
+          placeholder: null);
 
       setState(() {
         _initialized = true;
@@ -68,11 +66,13 @@ class _ParseVideoState extends State<ParseVideo> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized || chewieController == null) {
-      return AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: Container(
-          color: const Color(0xFF000000),
-          child: const CircularProgressIndicator.adaptive(),
+      return const AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Center(
+          child: SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator.adaptive()),
         ),
       );
     }

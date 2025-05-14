@@ -7,8 +7,6 @@ class _ParseNestedListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final props = _PropsInheritedWidget.of(context)!;
-
     // Get the direct children of the list item
     final List<dynamic> itemChildren = child['children'] as List<dynamic>;
 
