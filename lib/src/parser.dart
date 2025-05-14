@@ -53,6 +53,7 @@ class LexicalParser extends StatefulWidget {
       this.paragraphDataStyle,
       this.useColumn = false,
       this.useMyTextStyle = false,
+      this.errorWidget,
       this.globalContext});
 
   /// Direct input of the JSON structure.
@@ -79,6 +80,8 @@ class LexicalParser extends StatefulWidget {
   final EdgeInsetsGeometry? mathEquationPadding;
   final EdgeInsetsGeometry? listPadding;
   final ParagraphStyle? paragraphDataStyle;
+
+  final Widget? errorWidget;
 
   final bool? expanded;
   final bool useColumn;
@@ -130,25 +133,21 @@ class _LexicalParserState extends State<LexicalParser> {
 
   Widget _buildList() {
     if (_data?['root'] == null) {
-      return Container(
-        padding: widget.paragraphPadding,
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                widget.sourceString ?? 'Invalid JSON structure',
-                style: widget.paragraphStyle,
-              ),
+      return widget.errorWidget ??
+          Container(
+            padding: widget.paragraphPadding,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.sourceString ?? 'Invalid JSON structure',
+                    style: widget.paragraphStyle,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
+          );
     }
-    // if (widget.expanded == true) {
-    //   return ExpandableListView(
-    //     children: parseJsonChildrenWidget(parsedChildren),
-    //   );
-    // }
 
     if (widget.useColumn) {
       return Column(
