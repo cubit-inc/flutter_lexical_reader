@@ -45,9 +45,10 @@ class _ParseList extends StatelessWidget {
     final props = _PropsInheritedWidget.of(context)!;
     final bool isBulletList = child['listType'] == 'bullet';
     final children = child['children'] as List<dynamic>;
-    final TextStyle textStyle = props.paragraphStyle ??
-        Theme.of(context).textTheme.bodyMedium ??
-        const TextStyle();
+    final TextStyle textStyle = (props.paragraphStyle ??
+            Theme.of(context).textTheme.bodyMedium ??
+            const TextStyle())
+        .copyWith(fontFamily: props.fontFamily);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -65,6 +65,14 @@ class _ParseTableState extends State<ParseTable> {
       return TableRow(children: cells);
     }).toList();
 
+    final Map<int, TableColumnWidth> getColumnWidth = {
+      for (var index in List.generate(maxCells, (index) => index))
+        index: (widget.child?["colWidths"]?[index] != null)
+            ? FixedColumnWidth(double.parse(
+                widget.child?["colWidths"]?[index].toString() ?? '0'))
+            : const IntrinsicColumnWidth()
+    };
+
     return Scrollbar(
       trackVisibility: true,
       thumbVisibility: true,
@@ -80,10 +88,7 @@ class _ParseTableState extends State<ParseTable> {
             scrollDirection: Axis.horizontal,
             child: Table(
               defaultColumnWidth: const FlexColumnWidth(),
-              columnWidths: {
-                for (var index in List.generate(maxCells, (index) => index))
-                  index: const IntrinsicColumnWidth()
-              },
+              columnWidths: getColumnWidth,
               children: normalizedRows,
               border: TableBorder.all(color: Colors.black54),
             ),

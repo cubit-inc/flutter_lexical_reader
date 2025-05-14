@@ -129,6 +129,7 @@ class _ParseParagraph extends StatelessWidget {
     final paragraphPadding =
         _PropsInheritedWidget.of(context)?.paragraphPadding ??
             const EdgeInsets.symmetric(vertical: 8.0);
+    final fontFamily = _PropsInheritedWidget.of(context)?.fontFamily;
 
     if (lineType == null || lineType == LineType.paragraph) {
       final TextStyle textStyle = _getDefaultTextStyle(context);
@@ -175,7 +176,7 @@ class _ParseParagraph extends StatelessWidget {
                     fontSize: headingStyle.fontSize,
                     height: headingStyle.height,
                     fontWeight: headingStyle.fontWeight,
-                    fontFamily:
+                    fontFamily: fontFamily ??
                         Theme.of(context).textTheme.headlineLarge?.fontFamily,
                   ),
                 );
@@ -189,9 +190,10 @@ class _ParseParagraph extends StatelessWidget {
   }
 
   TextStyle _getDefaultTextStyle(BuildContext context) {
-    return _PropsInheritedWidget.of(context)!.paragraphStyle ??
-        Theme.of(context).textTheme.titleMedium ??
-        const TextStyle(fontSize: 12);
+    return (_PropsInheritedWidget.of(context)!.paragraphStyle ??
+            Theme.of(context).textTheme.titleMedium ??
+            const TextStyle(fontSize: 12))
+        .copyWith(fontFamily: _PropsInheritedWidget.of(context)!.fontFamily);
   }
 
   TextAlign _alignmentFromString(String? format, {TextAlign? textAlign}) {

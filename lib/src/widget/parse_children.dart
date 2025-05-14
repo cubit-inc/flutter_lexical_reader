@@ -2,9 +2,19 @@ part of '../parser.dart';
 
 List<Widget> parseJsonChildrenWidget(
     List<dynamic> children, BuildContext context,
-    {BuildContext? globalContext}) {
+    {BuildContext? globalContext, NodeTransformers? transformers}) {
   return children.map<Widget>(
     (child) {
+      Transformer? transformer;
+      if (transformers?.transformers
+              .indexWhere((node) => node.type == child['type'], -1) !=
+          -1) {
+        transformer = transformers?.transformers
+            .firstWhere((node) => node.type == child["type"]);
+      }
+      if (transformer != null) {
+        return transformer.transformerWidget(child, context);
+      }
       switch (child['type']) {
         case 'heading':
           LineType lineType = LineType.h2;
@@ -67,33 +77,53 @@ List<Widget> parseJsonChildrenWidget(
   ).toList();
 }
 
-List<InlineSpan> parseJsonChild(List<dynamic> children, BuildContext context) {
+List<InlineSpan> parseJsonChild(
+  List<dynamic> children,
+  BuildContext context,
+) {
   final List<InlineSpan> widgets = [];
   final props = _PropsInheritedWidget.of(context)!;
-
+  NodeTransformers? transformers = props.nodeTransformers;
   for (var child in children) {
-    switch (child['type']) {
-      case 'text':
-        widgets.add(_parseText(
-          child,
-          props.paragraphStyle ?? const TextStyle(),
-          props.useMyTextStyle,
-        ));
-        break;
-      case 'link':
-        widgets.add(_parseLink(child, props.paragraphStyle ?? const TextStyle(),
-            props.useMyTextStyle, context));
-        break;
-      case 'image':
-      case 'upload':
-        widgets.add(_parseImage(child, context));
-        break;
-      case 'equation':
-        widgets.add(_parseEquation(child, options: props.mathEquationOptions));
-        break;
-      default:
-        widgets.add(const WidgetSpan(child: SizedBox.shrink()));
-        break;
+    Transformer? transformer;
+    if (transformers?.transformers.indexWhere(
+            (node) => node.type == child['type'] && node.isInline, -1) !=
+        -1) {
+      transformer = transformers?.transformers
+          .firstWhere((node) => node.type == child["type"] && node.isInline);
+    }
+    if (transformer != null) {
+      widgets.add(
+          WidgetSpan(child: transformer.transformerWidget(child, context)));
+    } else {
+      switch (child['type']) {
+        case 'text':
+          widgets.add(_parseText(
+            child,
+            (props.paragraphStyle ?? const TextStyle())
+                .copyWith(fontFamily: props.fontFamily),
+            props.useMyTextStyle,
+          ));
+          break;
+        case 'link':
+          widgets.add(_parseLink(
+              child,
+              props.paragraphStyle ?? const TextStyle(),
+              props.useMyTextStyle,
+              context));
+          break;
+        case 'image':
+        case 'upload':
+          widgets.add(_parseImage(child, context));
+          break;
+        case 'equation':
+          widgets
+              .add(_parseEquation(child, options: props.mathEquationOptions));
+          break;
+        default:
+          widgets.add(const WidgetSpan(child: SizedBox.shrink()));
+          break;
+      }
     }
   }
   return widgets;

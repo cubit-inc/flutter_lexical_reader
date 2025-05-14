@@ -10,6 +10,7 @@ import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'model/image_options.dart';
 part 'card.dart';
+part 'node_transformers.dart';
 part 'props.dart';
 part 'widget/parse_children.dart';
 part 'widget/parse_equation.dart';
@@ -54,10 +55,17 @@ class LexicalParser extends StatefulWidget {
       this.useColumn = false,
       this.useMyTextStyle = false,
       this.errorWidget,
+      this.fontFamily,
+      this.nodeTransformers,
       this.globalContext});
 
   /// Direct input of the JSON structure.
   final Map<String, dynamic>? sourceMap;
+
+  /// List of transformers than can be used for parsing custom widgets
+  final NodeTransformers? nodeTransformers;
+
+  /// global Context can be used for cases when using nested navigation for full screen popup on image click
   final BuildContext? globalContext;
 
   /// Raw JSON string, which will be parsed internally.
@@ -66,6 +74,8 @@ class LexicalParser extends StatefulWidget {
   final TextStyle? paragraphStyle;
   final TextStyle? h1Style;
   final TextStyle? h2Style;
+
+  final String? fontFamily;
 
   final bool? lazyLoad;
   final EdgeInsets? tablePadding;
@@ -124,7 +134,9 @@ class _LexicalParserState extends State<LexicalParser> {
       tableCellPadding: widget.tableCellPadding,
       mathEquationOptions: widget.mathEquationOptions,
       imageOptions: widget.imageOptions,
+      fontFamily: widget.fontFamily,
       paragraphDataStyle: widget.paragraphDataStyle,
+      nodeTransformers: widget.nodeTransformers,
       useMyTextStyle: widget.useMyTextStyle,
       globalContext: widget.globalContext,
       child: _buildList(),
@@ -152,7 +164,8 @@ class _LexicalParserState extends State<LexicalParser> {
     if (widget.useColumn) {
       return Column(
         children: parseJsonChildrenWidget(parsedChildren, context,
-            globalContext: widget.globalContext),
+            globalContext: widget.globalContext,
+            transformers: widget.nodeTransformers),
       );
     }
 
@@ -164,7 +177,8 @@ class _LexicalParserState extends State<LexicalParser> {
             itemCount: parsedChildren.length,
             itemBuilder: (context, index) {
               return parseJsonChildrenWidget([parsedChildren[index]], context,
-                  globalContext: widget.globalContext)[0];
+                  globalContext: widget.globalContext,
+                  transformers: widget.nodeTransformers)[0];
             },
           )
         : ListView(
@@ -173,7 +187,8 @@ class _LexicalParserState extends State<LexicalParser> {
             controller: widget.scrollController,
             shrinkWrap: widget.shrinkWrap,
             children: parseJsonChildrenWidget(parsedChildren, context,
-                globalContext: widget.globalContext),
+                globalContext: widget.globalContext,
+                transformers: widget.nodeTransformers),
           );
   }
 }

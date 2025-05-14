@@ -18,6 +18,9 @@ class _PropsInheritedWidget extends InheritedWidget {
 
   final BuildContext? globalContext;
 
+  final NodeTransformers? nodeTransformers;
+  final String? fontFamily;
+
   const _PropsInheritedWidget({
     Key? key,
     this.paragraphStyle,
@@ -31,7 +34,9 @@ class _PropsInheritedWidget extends InheritedWidget {
     this.h2Style,
     required this.imageOptions,
     this.paragraphDataStyle,
+    this.nodeTransformers,
     this.globalContext,
+    this.fontFamily,
     required this.useMyTextStyle,
   }) : super(key: key, child: child);
 
