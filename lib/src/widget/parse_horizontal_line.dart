@@ -5,9 +5,12 @@ class _ParseHorizontalLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
-      color: Color(0xFFEBE7E5),
-      thickness: 2,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 12),
+      child: Divider(
+        color: Color(0xFFEBE7E5),
+        thickness: 2,
+      ),
     );
   }
 }

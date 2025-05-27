@@ -23,12 +23,9 @@ class _ParseNestedListItem extends StatelessWidget {
       );
     } else {
       // For regular list items, render the text content
-      return Padding(
-        padding: const EdgeInsets.only(left: 4.0),
-        child: RichText(
-          text: TextSpan(
-            children: parseJsonChild(itemChildren, context),
-          ),
+      return RichText(
+        text: TextSpan(
+          children: parseJsonChild(itemChildren, context),
         ),
       );
     }
@@ -45,13 +42,11 @@ class _ParseList extends StatelessWidget {
     final props = _PropsInheritedWidget.of(context)!;
     final bool isBulletList = child['listType'] == 'bullet';
     final children = child['children'] as List<dynamic>;
-    final TextStyle textStyle = (props.paragraphStyle ??
-            Theme.of(context).textTheme.bodyMedium ??
-            const TextStyle())
-        .copyWith(fontFamily: props.fontFamily);
+    final paragraphPadding =
+        props.paragraphPadding ?? const EdgeInsets.symmetric(vertical: 8.0);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: paragraphPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children.asMap().entries.map((entry) {
@@ -63,22 +58,45 @@ class _ParseList extends StatelessWidget {
           final bool hasNestedList =
               itemChildren.any((c) => c['type'] == 'list');
 
+          // Get the text style from the first text child if it exists
+          TextStyle? itemTextStyle;
+          if (itemChildren.isNotEmpty && itemChildren[0]['type'] == 'text') {
+            final textChild = itemChildren[0];
+            itemTextStyle = _textStyle(
+              textChild['format'],
+              props.paragraphStyle ?? const TextStyle(),
+              props.useMyTextStyle,
+            ).copyWith(fontFamily: props.fontFamily);
+          } else {
+            itemTextStyle = (props.paragraphStyle ?? const TextStyle())
+                .copyWith(fontFamily: props.fontFamily);
+          }
+
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4.0),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
               children: [
                 if (!hasNestedList) ...[
                   SizedBox(
                     width: 24,
-                    child: Text(
-                      isBulletList ? '•' : '${index + 1}.',
-                      style: textStyle,
+                    child: Baseline(
+                      baseline: itemTextStyle!.fontSize ?? 16.0,
+                      baselineType: TextBaseline.alphabetic,
+                      child: Text(
+                        isBulletList ? '•' : '${index + 1}.',
+                        style: itemTextStyle,
+                      ),
                     ),
                   ),
                 ],
                 Expanded(
-                  child: _ParseNestedListItem(child: item),
+                  child: Baseline(
+                    baseline: itemTextStyle!.fontSize ?? 16.0,
+                    baselineType: TextBaseline.alphabetic,
+                    child: _ParseNestedListItem(child: item),
+                  ),
                 ),
               ],
             ),

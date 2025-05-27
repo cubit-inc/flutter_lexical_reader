@@ -80,7 +80,7 @@ class _ParseTableState extends State<ParseTable> {
       controller: _scrollController,
       interactive: false,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Padding(
           padding: tablePadding,
           child: SingleChildScrollView(
