@@ -23,14 +23,36 @@ The Flutter Lexical Reader is a package designed to efficiently read and process
      flutter_lexical_reader: latest_version
 
 
-## Usage
+   ## Usage
 
-import 'package:flutter_lexical_reader/flutter_lexical_reader.dart';
+   import 'package:flutter_lexical_reader/flutter_lexical_reader.dart';
 
-// Use the parser...
-const exampleMarkup = '...';  // Your lexical markup here
-final parsedData = LexicalParser.parse(exampleMarkup);
+   // Use the parser...
+   const exampleMarkup = '...';  // Your lexical markup here
+   final parsedData = LexicalParser.parse(exampleMarkup);
 
+```
+
+### Custom Error Widget
+
+```dart
+    LexicalParser(
+        shrinkWrap: true,
+        fontFamily: font, // add font to globally set the font of the parser
+        globalContext: globalContext, // use global context incase of nested route screen
+        errorWidget: ErrorWidget(), // add a widget incase of parse failure        
+        sourceMap: sourceMap,
+        nodeTransformers: NodeTransformers(transformers: [
+            Transformer(
+                type: "image",
+                transformerWidget: (Map<String, dynamic> childElement, BuildContext context) {
+                    CachedNetworkImage(
+                        // your transformer code here
+                    )
+                })
+            ]), //Map of node transformer
+        
+    ),
 ```
 
 ## Additional information
