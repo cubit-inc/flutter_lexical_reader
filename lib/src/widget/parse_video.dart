@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 class ParseVideo extends StatefulWidget {
   final Map<String, dynamic> child;
+
   const ParseVideo({super.key, required this.child});
 
   @override
@@ -12,47 +15,41 @@ class ParseVideo extends StatefulWidget {
 
 class _ParseVideoState extends State<ParseVideo> {
   late VideoPlayerController _controller;
+  ChewieController? chewieController;
   bool _initialized = false;
   String? videoUrl;
-  ChewieController? chewieController;
 
   @override
   void initState() {
-    debugPrint("initState triggered");
-    String url = widget.child["value"]["url"];
-    setState(() {
-      videoUrl = url;
-    });
-    debugPrint("this is for video parser :: $url");
-    if (url != null) {
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(url),
-        videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true),
-      );
-
-      _initializeVideo();
-    }
-
     super.initState();
+    final url = widget.child["value"]["url"] as String?;
+    if (url != null) {
+      videoUrl = url;
+      debugPrint("Video URL: $url");
+      _initializeVideo(url);
+    }
   }
 
-  Future<void> _initializeVideo() async {
+  Future<void> _initializeVideo(String url) async {
     try {
+      final file = await DefaultCacheManager().getSingleFile(url);
+
+      _controller = VideoPlayerController.file(file);
+
       await _controller.initialize();
 
-      // Create chewie controller after video is initialized
       chewieController = ChewieController(
-          videoPlayerController: _controller,
-          autoPlay: false,
-          looping: false,
-          aspectRatio: _controller.value.aspectRatio,
-          placeholder: null);
+        videoPlayerController: _controller,
+        autoPlay: false,
+        looping: false,
+        aspectRatio: _controller.value.aspectRatio,
+      );
 
       setState(() {
         _initialized = true;
       });
     } catch (error) {
-      debugPrint("Error initializing video: $error");
+      debugPrint("Error loading video: $error");
     }
   }
 
@@ -70,9 +67,10 @@ class _ParseVideoState extends State<ParseVideo> {
         aspectRatio: 16 / 9,
         child: Center(
           child: SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator.adaptive()),
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator.adaptive(),
+          ),
         ),
       );
     }
