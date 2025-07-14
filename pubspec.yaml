@@ -1,7 +1,6 @@
 name: flutter_lexical_reader
 description: is a powerful and flexible library for reading and analyzing lexical structures in text data inside Flutter applications. This package provides intuitive tools for extracting, analyzing and manipulating lexical elements such as words, phrases and sentences.
 version: 1.1.17
-homepage:
 # repository: https://github.com/sbmgamescom/flutter_lexical_reader
 publish_to: none
 
@@ -17,6 +16,7 @@ dependencies:
   video_player: ^2.9.5
   chewie: ^1.11.3
   url_launcher: ^6.3.1
+  flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:
@@ -27,8 +27,6 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
-
   # To add assets to your package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
