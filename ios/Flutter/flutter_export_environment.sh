@@ -1,12 +1,12 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/bekzatshakutov/Development/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/bekzatshakutov/Projects/flutter_lexical_reader"
+export "FLUTTER_ROOT=/Users/roshanoscarsah/fvm/versions/3.29.3"
+export "FLUTTER_APPLICATION_PATH=/Users/roshanoscarsah/Downloads/github/samoa-meteorology-app/packages/flutter_lexical_reader"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"
-export "FLUTTER_BUILD_NAME=1.1.8"
-export "FLUTTER_BUILD_NUMBER=1.1.8"
+export "FLUTTER_BUILD_NAME=1.1.17"
+export "FLUTTER_BUILD_NUMBER=1.1.17"
 export "DART_OBFUSCATION=false"
 export "TRACK_WIDGET_CREATION=true"
 export "TREE_SHAKE_ICONS=false"
