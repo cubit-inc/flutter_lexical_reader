@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cached_video_player_plus/cached_video_player_plus.dart';
+import 'package:video_player/video_player.dart';
 
 class ParseVideo extends StatefulWidget {
   final Map<String, dynamic> child;
@@ -12,8 +13,7 @@ class ParseVideo extends StatefulWidget {
 }
 
 class _ParseVideoState extends State<ParseVideo> {
-  CachedVideoPlayerPlusController? _controller;
-  bool _initialized = false;
+  CachedVideoPlayerPlus? _player;
   bool _isPlaying = false;
   bool _showControls = false;
   String? videoUrl;
@@ -36,39 +36,34 @@ class _ParseVideoState extends State<ParseVideo> {
 
   Future<void> _initializeVideo(String url) async {
     try {
-      _controller = CachedVideoPlayerPlusController.networkUrl(
+      _player = CachedVideoPlayerPlus.networkUrl(
         Uri.parse(url),
         invalidateCacheIfOlderThan: const Duration(days: 7),
       );
 
-      await _controller!.initialize();
+      await _player!.initialize();
 
       // Add listener to track playing state
-      _controller!.addListener(() {
+      _player!.controller.addListener(() {
         if (mounted) {
           setState(() {
-            _isPlaying = _controller!.value.isPlaying;
+            _isPlaying = _player!.controller.value.isPlaying;
           });
         }
       });
 
-      // // Start playing automatically
-      // await _controller!.play();
-
-      setState(() {
-        _initialized = true;
-      });
+      setState(() {});
     } catch (error) {
       debugPrint("Error loading video: $error");
     }
   }
 
   void _togglePlayPause() {
-    if (_controller != null) {
+    if (_player != null) {
       if (_isPlaying) {
-        _controller!.pause();
+        _player!.controller.pause();
       } else {
-        _controller!.play();
+        _player!.controller.play();
       }
       _showControlsTemporarily();
     }
@@ -100,13 +95,13 @@ class _ParseVideoState extends State<ParseVideo> {
   @override
   void dispose() {
     _hideControlsTimer?.cancel();
-    _controller?.dispose();
+    _player?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_initialized || _controller == null) {
+    if (_player == null || !_player!.isInitialized) {
       return const AspectRatio(
         aspectRatio: 16 / 9,
         child: Center(
@@ -121,14 +116,14 @@ class _ParseVideoState extends State<ParseVideo> {
 
     try {
       return AspectRatio(
-        aspectRatio: _controller!.value.aspectRatio,
+        aspectRatio: _player!.controller.value.aspectRatio,
         child: GestureDetector(
           onTap: _togglePlayPause,
           onDoubleTap: _hideControls,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              CachedVideoPlayerPlus(_controller!),
+              VideoPlayer(_player!.controller),
               // Custom play/pause button overlay (only show when paused or controls are visible)
               if (!_isPlaying || _showControls)
                 AnimatedOpacity(
